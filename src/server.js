@@ -22,16 +22,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// CADASTRO E LOGIN
+
 app.post("/register", async (req, res) => {
 
-    const userSchema = Joi.object({
+    const registerSchema = Joi.object({
         name: Joi.string().min(1).max(30).required(),
         email: Joi.string().trim().email().required(),
         password: Joi.string().min(3).required(),
         confirmPassword: Joi.string().valid(Joi.ref('password')).required(),
     });
 
-    const validation = userSchema.validate(req.body);
+    const validation = registerSchema.validate(req.body);
 
     if (!validation.error) {   
         
@@ -89,5 +91,53 @@ app.post("/login", async (req, res) => {
         res.sendStatus(401);
     }     
 });
+
+
+// DASHBOARD DE TRANSAÇÕES
+
+
+app.get("/transactions", async (req, res) => {
+    try {
+        const authorization = req.headers['authorization'];
+        const token = authorization.replace('Bearer ', '');
+                
+        console.log(token)
+        const user = await connection.query(`
+        SELECT * FROM sessions
+        JOIN users
+        ON sessions."userId" = users.id
+        WHERE sessions.token = $1
+        `, [token]);
+
+        // const getUserInfo = await connection.query(`
+        
+        // `)
+       
+        console.log(user.rows[0])
+
+        if(user.rows[0]) {
+            const result = await connection.query(`
+            SELECT * FROM transactions WHERE "idUser" = $1
+            `, [user.rows[0].userId])
+
+            res.send({
+                transactions: result.rows,
+                userName: user.rows[0].name                
+            });
+            
+        } else {
+            res.sendStatus(401);
+        }
+
+    } catch(e) {
+        console.log(e);
+        res.sendStatus(500);
+    }
+
+
+
+});
+
+
 
 app.listen(4000, () => {console.log("Server rodando na 4000")});
