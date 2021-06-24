@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import pg from "pg";
-import joi from "joi";
 import dayjs from "dayjs";
 import bcrypt from "bcrypt";
 import Joi from "joi";
@@ -99,9 +98,8 @@ app.post("/login", async (req, res) => {
 app.get("/transactions", async (req, res) => {
     try {
         const authorization = req.headers['authorization'];
-        const token = authorization.replace('Bearer ', '');
-                
-        console.log(token)
+        const token = authorization?.replace('Bearer ', '');               
+       
         const user = await connection.query(`
         SELECT * FROM sessions
         JOIN users
@@ -109,10 +107,8 @@ app.get("/transactions", async (req, res) => {
         WHERE sessions.token = $1
         `, [token]);
 
-        // const getUserInfo = await connection.query(`
-        
-        // `)
-       
+        if(!token) return res.sendStatus(401);       
+            
         console.log(user.rows[0])
 
         if(user.rows[0]) {
@@ -133,9 +129,65 @@ app.get("/transactions", async (req, res) => {
         console.log(e);
         res.sendStatus(500);
     }
+});
 
+// CADASTRAR NOVA ENTRADA E NOVA SAÍDA
 
+app.post("/newtransaction", async (req, res) => {
+    try {
+        const authorization = req.headers['authorization'];
+        const token = authorization?.replace('Bearer ', '');               
+       
+        const user = await connection.query(`
+        SELECT * FROM sessions
+        JOIN users
+        ON sessions."userId" = users.id
+        WHERE sessions.token = $1
+        `, [token]);
 
+        if(!token) return res.sendStatus(401); 
+        
+        const { value, description, type } = req.body;  
+        const date = dayjs();     
+
+        if(user.rows[0]) {
+            const result = await connection.query(`
+            INSERT INTO transactions ("idUser", date, description, value, type)
+            VALUES ($1, $2, $3, $4, $5)
+            `, [user.rows[0].userId, date, description, value, type])
+
+            res.send(result.rows);
+
+        } else {
+            res.sendStatus(401);
+        }
+
+    } catch(e) {
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+
+// LOGOUT
+
+app.post("/logout", async (req, res) => {
+    try {
+        const authorization = req.headers['authorization'];
+        const token = authorization?.replace('Bearer ', '');               
+       
+        if(!token) return res.sendStatus(401); 
+
+        await connection.query(`
+        DELETE FROM sessions
+        WHERE token = $1
+        `, [token]); 
+        
+        res.sendStatus(200);
+
+    } catch(e) {
+        console.log(e);
+        res.sendStatus(500);
+    } 
 });
 
 
