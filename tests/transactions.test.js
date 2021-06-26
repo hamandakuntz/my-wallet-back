@@ -57,6 +57,21 @@ describe("GET /transactions", () => {
 
 describe("POST /newtransaction", () => {
     it("returns the correct transaction data object", async () => {
+
+        const response = await connection.query(`
+        INSERT INTO users (name, email, password)
+        VALUES ('teste', 'teste@teste.com', 'testeencriptado') RETURNING id     
+        `);
+
+        const userId = response.rows[0].id;
+
+        const randomNumber = parseInt(Math.random()*1000);
+
+        await connection.query(`
+            INSERT INTO sessions ("userId", token)
+            VALUES (${userId}, 'meusupertoken${randomNumber}')
+        `);
+
         const getToken = await connection.query(`
         SELECT sessions.token FROM sessions
         JOIN users
@@ -72,6 +87,20 @@ describe("POST /newtransaction", () => {
 
     it("returns 200 for authenticated user", async () => {
 
+        const response = await connection.query(`
+        INSERT INTO users (name, email, password)
+        VALUES ('teste', 'teste@teste.com', 'testeencriptado') RETURNING id     
+        `);
+
+        const userId = response.rows[0].id;
+
+        const randomNumber = parseInt(Math.random()*1000);
+
+        await connection.query(`
+            INSERT INTO sessions ("userId", token)
+            VALUES (${userId}, 'meusupertoken${randomNumber}')
+        `);
+
         const getToken = await connection.query(`
         SELECT sessions.token FROM sessions
         JOIN users
@@ -79,7 +108,10 @@ describe("POST /newtransaction", () => {
         WHERE users.email = 'teste@teste.com'
         `)   
 
-        const body = { value: '4000', description: 'lala', type: 'entry' }
+        const body = { 
+        value: '4000', 
+        description: 'lala', 
+        type: 'entry' }
 
         const result = await supertest(app).post("/newtransaction").set('Authorization',`${getToken.rows[0].token}`).send(body);          
         expect(result.status).toEqual(201);
@@ -108,4 +140,18 @@ afterAll( async () => {
     `)  
 
     connection.end();
+});
+
+beforeEach( async () => {
+    await connection.query(`
+        DELETE FROM transactions
+    `)  
+
+    await connection.query(`
+        DELETE FROM sessions
+    `)  
+
+    await connection.query(`
+        DELETE FROM users
+    `)   
 });

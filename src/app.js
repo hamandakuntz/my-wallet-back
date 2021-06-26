@@ -49,8 +49,7 @@ app.post("/register", async (req, res) => {
             
             res.sendStatus(201);
 
-        } catch (e) {
-            console.log(e);
+        } catch (e) {           
             res.sendStatus(500);
         }
     } else {
@@ -98,13 +97,14 @@ app.get("/transactions", async (req, res) => {
         WHERE sessions.token = $1
         `, [token]);
 
-        if(!token) return res.sendStatus(401);       
+        if(!token) return res.sendStatus(401);     
             
-        console.log(user.rows[0])
-
+   
         if(user.rows[0]) {
             const result = await connection.query(`
-            SELECT * FROM transactions WHERE "idUser" = $1
+            SELECT * FROM transactions 
+            WHERE "idUser" = $1
+            ORDER BY date DESC
             `, [user.rows[0].userId])
 
             res.send({
@@ -116,8 +116,7 @@ app.get("/transactions", async (req, res) => {
             res.sendStatus(401);
         }
 
-    } catch(e) {
-        console.log(e);
+    } catch(e) {       
         res.sendStatus(500);
     }
 });
@@ -140,12 +139,12 @@ app.post("/newtransaction", async (req, res) => {
         
 
         const { value, description, type } = req.body;  
-        const date = dayjs(); 
+        const date = dayjs().format('YYYY-MM-DD HH:mm:ss'); 
 
         const acceptedTypes = ['entry', 'output'];
         
         const transactionSchema = Joi.object({
-            value: Joi.string().required(),
+            value: Joi.required(),
             description: Joi.string().required(),
             type: Joi.string().valid(...acceptedTypes).required()
         });
@@ -169,8 +168,7 @@ app.post("/newtransaction", async (req, res) => {
             res.sendStatus(400);
         }
 
-    } catch(e) {
-        console.log(e);
+    } catch(e) {       
         res.sendStatus(500);
     }
 });
@@ -191,8 +189,7 @@ app.post("/logout", async (req, res) => {
         
         res.sendStatus(200);
 
-    } catch(e) {
-        console.log(e);
+    } catch(e) {       
         res.sendStatus(500);
     } 
 });
