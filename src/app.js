@@ -12,8 +12,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// CADASTRO E LOGIN
-
 app.post("/register", async (req, res) => {
 
     const registerSchema = Joi.object({
@@ -81,10 +79,6 @@ app.post("/login", async (req, res) => {
     }     
 });
 
-
-// DASHBOARD DE TRANSAÇÕES
-
-
 app.get("/transactions", async (req, res) => {
     try {
         const authorization = req.headers['authorization'];
@@ -120,8 +114,6 @@ app.get("/transactions", async (req, res) => {
         res.sendStatus(500);
     }
 });
-
-// CADASTRAR NOVA ENTRADA E NOVA SAÍDA
 
 app.post("/newtransaction", async (req, res) => {
     try {
@@ -172,8 +164,6 @@ app.post("/newtransaction", async (req, res) => {
         res.sendStatus(500);
     }
 });
-
-// LOGOUT
 
 app.post("/logout", async (req, res) => {
     try {
