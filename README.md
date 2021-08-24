@@ -43,11 +43,11 @@ The following tools and frameworks I used in the construction of the project:<br
 3. Follow instructions to run front-end at https://github.com/hamandakuntz/my-wallet-front
 
 4. Create a database (you can find the ``dump.sql`` file at ``database`` paste in this repository):
- - 4.1 Open your terminal in the same path as the ``dump.sql`` file is.
- - 4.2 Use the command ``sudo su postgres``, enter your password to connect with PostgreSQL and then, type ``psql postgres`` and click enter.
- - 4.3 Use the command ``CREATE DATABASE mywallet`` to create a database and then click enter.
- - 4.4 Type \q and hit enter again.
- - 4.5 Finally, use the command ``psql mywallet < dump.sql``. This way your database will be ready. 
+    - 4.1 Open your terminal in the same path as the ``dump.sql`` file is.
+    - 4.2 Use the command ``sudo su postgres``, enter your password to connect with PostgreSQL and then, type ``psql postgres`` and click enter.
+    - 4.3 Use the command ``CREATE DATABASE mywallet`` to create a database and then click enter.
+    - 4.4 Type \q and hit enter again.
+    - 4.5 Finally, use the command ``psql mywallet < dump.sql``. This way your database will be ready. 
   
 5. Now we need to set the environment variables:
   - 5.1 Create a ``.env`` file in the folder root
