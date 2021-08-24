@@ -50,10 +50,10 @@ The following tools and frameworks I used in the construction of the project:<br
     - 4.5 Finally, use the command ``psql mywallet < dump.sql``. This way your database will be ready. 
   
 5. Now we need to set the environment variables:
-  - 5.1 Create a ``.env`` file in the folder root
-  - 5.2 Use the ``.env.example`` as a model
-  - 5.3 Alter the DATABASE_URL to this format: ``"postgres://user:password@host:port/mywallet"``
-  - 4 Set the ``PORT`` to 4000
+   - 5.1 Create a ``.env`` file in the folder root
+   - 5.2 Use the ``.env.example`` as a model
+   - 5.3 Alter the DATABASE_URL to this format: ``"postgres://user:password@host:port/mywallet"``
+   - 5.4 Set the ``PORT`` to 4000
   
 6. Install all dependencies
 ```bash
